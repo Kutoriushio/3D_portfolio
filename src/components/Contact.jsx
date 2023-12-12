@@ -14,8 +14,14 @@ const Contact = () => {
     email: "",
     message: "",
   });
-  const [isLoading, setIsLoading] = useState(false);
 
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -25,6 +31,35 @@ const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    let isValidate = true;
+    let validationErrors = {};
+    if (form.name.length < 2) {
+      validationErrors = {
+        ...validationErrors,
+        name: "Name must be at least 2 characters",
+      };
+      isValidate = false;
+    }
+
+    if (form.message.length === 0) {
+      validationErrors = {
+        ...validationErrors,
+        message: "Message can not be blank.",
+      };
+      isValidate = false;
+    }
+
+    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(form.email)) {
+      validationErrors = {
+        ...validationErrors,
+        email: "Invalid Email.",
+      };
+      isValidate = false;
+    }
+    setErrors(validationErrors);
+    if (!isValidate) {
+      return;
+    }
     setIsLoading(true);
     emailjs
       .send(
@@ -44,6 +79,11 @@ const Contact = () => {
           alert("Thank you. I will get back to you as soon as possible.");
           window.location.reload();
           setForm({
+            name: "",
+            email: "",
+            message: "",
+          });
+          setErrors({
             name: "",
             email: "",
             message: "",
@@ -75,6 +115,11 @@ const Contact = () => {
               className="bg-tertiary py-4 px-6 placeholder:text-secondary
              text-white rounded-lg outline-none border-none font-medium"
             />
+            {errors.name && (
+              <span className=" text-red-600 mt-2 text-[13px] px-6">
+                {errors.name}
+              </span>
+            )}
           </label>
 
           <label className="flex flex-col">
@@ -87,6 +132,11 @@ const Contact = () => {
               className="bg-tertiary py-4 px-6 placeholder:text-secondary
              text-white rounded-lg outline-none border-none font-medium"
             />
+            {errors.email && (
+              <span className=" text-red-600 mt-2 text-[13px] px-6">
+                {errors.email}
+              </span>
+            )}
           </label>
 
           <label className="flex flex-col">
@@ -99,6 +149,11 @@ const Contact = () => {
               className="bg-tertiary py-4 px-6 placeholder:text-secondary
              text-white rounded-lg outline-none border-none font-medium"
             />
+            {errors.message && (
+              <span className=" text-red-600 mt-2 text-[13px] px-6">
+                {errors.message}
+              </span>
+            )}
           </label>
 
           <button
