@@ -7,95 +7,58 @@ import { styles } from "../styles";
 import { EarthCanvas } from "./canvas";
 import { SectionWrapper } from "../hoc";
 import { slideIn } from "../utils/motion";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Contact = () => {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
-
-  const [errors, setErrors] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
-
   const [isLoading, setIsLoading] = useState(false);
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let isValidate = true;
-    let validationErrors = {};
-    if (form.name.length < 2) {
-      validationErrors = {
-        ...validationErrors,
-        name: "Name must be at least 2 characters",
-      };
-      isValidate = false;
-    }
-
-    if (form.message.length === 0) {
-      validationErrors = {
-        ...validationErrors,
-        message: "Message can not be blank.",
-      };
-      isValidate = false;
-    }
-
-    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(form.email)) {
-      validationErrors = {
-        ...validationErrors,
-        email: "Invalid Email.",
-      };
-      isValidate = false;
-    }
-    setErrors(validationErrors);
-    if (!isValidate) {
-      return;
-    }
-    setIsLoading(true);
-    emailjs
-      .send(
-        import.meta.env.VITE_APP_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_APP_EMAILJS_TEMPLATE_ID,
-        {
-          from_name: form.name,
-          to_name: "Haowei",
-          from_email: form.email,
-          message: form.message,
-        },
-        import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY
-      )
-      .then(
-        () => {
-          setIsLoading(false);
-          alert("Thank you. I will get back to you as soon as possible.");
-          window.location.reload();
-          setForm({
-            name: "",
-            email: "",
-            message: "",
-          });
-          setErrors({
-            name: "",
-            email: "",
-            message: "",
-          });
-        },
-        (error) => {
-          setIsLoading(false);
-          console.log(error);
-          alert("Ahh, something went wrong. Please try again.");
-        }
-      );
-  };
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      message: "",
+    },
+    validationSchema: Yup.object({
+      name: Yup.string()
+        .max(15, "Must be 15 characters or less")
+        .required("Required"),
+      message: Yup.string()
+        .max(200, "Must be 200 characters or less")
+        .required("Required"),
+      email: Yup.string().email("Invalid email address").required("Required"),
+    }),
+    onSubmit: async (values) => {
+      try {
+        setIsLoading(true);
+        await toast.promise(
+          emailjs.send(
+            import.meta.env.VITE_APP_EMAILJS_SERVICE_ID,
+            import.meta.env.VITE_APP_EMAILJS_TEMPLATE_ID,
+            {
+              from_name: values.name,
+              to_name: "Haowei",
+              from_email: values.email,
+              message: values.message,
+            },
+            import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY
+          ),
+          {
+            pending: "Please wait for sending your message.",
+            success: "Thank you. I will get back to you as soon as possible.",
+            error: "Ahh, something went wrong. Please try again.",
+          }
+        );
+        formik.resetForm();
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+  });
   return (
     <div className="flex xl:flex-row flex-col-reverse xl:mt-12 gap-10 overflow-hidden">
       <motion.div
@@ -104,22 +67,28 @@ const Contact = () => {
       >
         <p className={styles.sectionSubText}>Get in touch</p>
         <h3 className={styles.sectionHeadText}>Contact.</h3>
-        <form className="mt-12 flex flex-col gap-8" onSubmit={handleSubmit}>
+        <form
+          onSubmit={formik.handleSubmit}
+          className="mt-12 flex flex-col gap-8"
+        >
           <label className="flex flex-col">
             <span className="text-white font-medium mb-4">Your name</span>
             <input
               name="name"
               type="text"
               placeholder="What's your name?"
-              onChange={handleChange}
+              id="name"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.name}
               className="bg-tertiary py-4 px-6 placeholder:text-secondary
              text-white rounded-lg outline-none border-none font-medium"
             />
-            {errors.name && (
-              <span className=" text-red-600 mt-2 text-[13px] px-6">
-                {errors.name}
-              </span>
-            )}
+            {formik.errors.name && formik.touched.name ? (
+              <div className=" text-red-600 mt-2 text-[13px] px-6">
+                {formik.errors.name}
+              </div>
+            ) : null}
           </label>
 
           <label className="flex flex-col">
@@ -127,36 +96,44 @@ const Contact = () => {
             <input
               name="email"
               type="email"
-              onChange={handleChange}
               placeholder="What's your email?"
+              id="email"
+              onChange={formik.handleChange}
+              value={formik.values.email}
+              onBlur={formik.handleBlur}
               className="bg-tertiary py-4 px-6 placeholder:text-secondary
              text-white rounded-lg outline-none border-none font-medium"
             />
-            {errors.email && (
-              <span className=" text-red-600 mt-2 text-[13px] px-6">
-                {errors.email}
-              </span>
-            )}
+            {formik.errors.email && formik.touched.email ? (
+              <div className=" text-red-600 mt-2 text-[13px] px-6">
+                {formik.errors.email}
+              </div>
+            ) : null}
           </label>
 
           <label className="flex flex-col">
             <span className="text-white font-medium mb-4">Your message</span>
             <textarea
-              name="message"
               rows={7}
-              onChange={handleChange}
+              name="message"
+              type="text"
               placeholder="What you want to say?"
+              id="message"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.message}
               className="bg-tertiary py-4 px-6 placeholder:text-secondary
              text-white rounded-lg outline-none border-none font-medium"
             />
-            {errors.message && (
-              <span className=" text-red-600 mt-2 text-[13px] px-6">
-                {errors.message}
-              </span>
-            )}
+            {formik.errors.message && formik.touched.message ? (
+              <div className=" text-red-600 mt-2 text-[13px] px-6">
+                {formik.errors.message}
+              </div>
+            ) : null}
           </label>
 
           <button
+            disabled={isLoading}
             type="submit"
             className="bg-tertiary py-3 w-fit px-8 rounded-xl outline-none text-white font-bold shadow-md shadow-primary"
           >
@@ -171,6 +148,7 @@ const Contact = () => {
       >
         <EarthCanvas />
       </motion.div>
+      <ToastContainer position="bottom-right" />
     </div>
   );
 };
