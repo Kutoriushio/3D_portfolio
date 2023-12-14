@@ -14,12 +14,17 @@ const ProjectCard = ({
   description,
   tags,
   image,
+  github_code_link,
   source_code_link,
 }) => {
   return (
-    <motion.div variants={fadeIn("up", "spring", index * 0.5, 0.75)}>
+    <motion.div
+      variants={fadeIn("up", "spring", index * 0.5, 0.75)}
+      className="cursor-pointer"
+      onClick={() => window.open(source_code_link, "_blank")}
+    >
       <ParallaxTilt className="bg-tertiary p-5 sm:w-[360px] w-full rounded-2xl">
-        <div className="w-full h-[230px] relative">
+        <div className="w-full h-[230px] relative ">
           <img
             src={image}
             alt={name}
@@ -29,7 +34,10 @@ const ProjectCard = ({
           <div className="absolute inset-0 flex justify-end m-3">
             <div
               className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer"
-              onClick={() => window.open(source_code_link, "_blank")}
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open(github_code_link, "_blank");
+              }}
             >
               <img
                 src={github}
