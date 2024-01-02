@@ -17,6 +17,7 @@ import {
   react,
   tensorflow,
   melongram,
+  melonchat,
   python,
 } from "../assets";
 
@@ -191,27 +192,28 @@ const projects = [
       "https://github.com/Kutoriushio/Full-Stack-Social-Media-App",
     source_code_link: "https://melongram.vercel.app/",
   },
-  // {
-  //   name: "Trip Guide",
-  //   description:
-  //     "A comprehensive travel booking platform that allows users to book flights, hotels, and rental cars, and offers curated recommendations for popular destinations.",
-  //   tags: [
-  //     {
-  //       name: "nextjs",
-  //       color: "blue-text-gradient",
-  //     },
-  //     {
-  //       name: "supabase",
-  //       color: "green-text-gradient",
-  //     },
-  //     {
-  //       name: "css",
-  //       color: "pink-text-gradient",
-  //     },
-  //   ],
-  //   image: tripguide,
-  //   source_code_link: "https://github.com/",
-  // },
+  {
+    name: "Melonchat",
+    description:
+      "Real time chat application enabling  users to engage in real-time conversations. Users can personalize their profiles, share multimedia content, and participate in both group and one-on-one chats.",
+    tags: [
+      {
+        name: "nextjs",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "pusher",
+        color: "green-text-gradient",
+      },
+      {
+        name: "tailwindcss",
+        color: "pink-text-gradient",
+      },
+    ],
+    image: melonchat,
+    github_code_link: "https://github.com/Kutoriushio/chat_application",
+    source_code_link: "https://melonchat.vercel.app/",
+  },
 ];
 
 export { services, technologies, experiences, projects };

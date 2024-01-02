@@ -26,9 +26,8 @@ import react from "./company/react.svg";
 import postgre from "./company/postgre.png";
 import tensorflow from "./company/tensorflow.svg";
 
-import carrent from "./carrent.png";
 import melongram from "./melongram.png";
-import tripguide from "./tripguide.png";
+import melonchat from "./melonchat.png";
 
 export {
   logo,
@@ -56,7 +55,6 @@ export {
   tensorflow,
   react,
   postgre,
-  carrent,
   melongram,
-  tripguide,
+  melonchat,
 };
